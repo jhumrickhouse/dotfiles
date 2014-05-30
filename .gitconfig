@@ -1,0 +1,15 @@
+[user]
+	name = Joe Humrickhouse
+	email = jhumrickhouse@fulcrum.net
+
+[alias]
+	hist = log --color --pretty=format:\"%C(yellow)%h%C(reset) %s%C(bold red)%d%C(reset) %C(green)%ad%C(reset) %C(blue)[%an]%C(reset)\" --relative-date --decorate
+	unstage = reset HEAD --
+	co = checkout
+	graph = log --color --graph --pretty=format:\"%h | %ad | %an | %s%d\" --date=short
+	pr = pull -rebase
+
+[core]
+	excludesfile = /Users/joe/.gitignore_global
+[push]
+	default = simple
