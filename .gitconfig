@@ -7,7 +7,7 @@
 	unstage = reset HEAD --
 	co = checkout
 	graph = log --color --graph --pretty=format:\"%h | %ad | %an | %s%d\" --date=short
-	pr = pull -rebase
+	pr = pull --rebase
 
 [core]
 	excludesfile = /Users/joe/.gitignore_global
