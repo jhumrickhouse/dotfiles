@@ -79,6 +79,9 @@ alias e="emacs -nw"
 # Brew update and show outdated
 alias bu="brew update && brew outdated"
 
+# Pretty print json from pasteboard
+alias jsonp="pbpaste | python -mjson.tool"
+
 # Aliases for working with ANTLR
 alias antlr4='java -jar ~/lib/java/antlr-4.2.2-complete.jar'
 alias grun='java org.antlr.v4.runtime.misc.TestRig'
