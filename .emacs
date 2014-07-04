@@ -28,6 +28,11 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
+;; Use Eldoc
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+
 ;; Setup TRAMP
 (require 'tramp)
 (setq tramp-default-method "ssh")
@@ -54,13 +59,12 @@
 (add-to-list 'auto-mode-alist '("Rakefile\\'" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Gemfile\\'" . ruby-mode))
 
-;; NREPL Setup
-(unless (package-installed-p 'nrepl)
-  (package-install 'nrepl))
-(add-hook 'nrepl-interaction-mode-hook 'nrepl-turn-on-eldoc-mode)
-(setq nrepl-hide-special-buffers t)
-(add-hook 'nrepl-mode-hook 'subword-mode)
-(add-hook 'nrepl-mode-hook 'smartparens-mode)
+;; CIDER Setup
+(unless (package-installed-p 'cider)
+  (package-install 'cider))
+(add-hook 'cider-repl-mode-hook 'subword-mode)
+(add-hook 'cider-repl-mode-hook 'paredit-mode)
+(add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 
 ;; Default Pdb Call
 (setq gud-pdb-command-name "python -m pdb")
