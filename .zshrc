@@ -72,6 +72,9 @@ source /usr/local/bin/virtualenvwrapper.sh
 #
 ###############################################################################
 
+# Clone dotfiles
+alias dotfiles="hub clone jhumrickhouse/dotfiles"
+
 # alias e="emacsclient -t"
 # alias kill-emacs="emacsclient -e \"(kill-emacs)\""
 alias e="emacs -nw"
