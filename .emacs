@@ -13,6 +13,8 @@
       scroll-conservatively             1000
       exec-path                         (append exec-path '("/usr/local/bin")))
 
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 ;; Configure autosaves
 (defvar my-auto-save-folder "~/.emacs.d/autosave")
 (setq auto-save-list-file-prefix "~/.emacs.d/autosave/.saves-")
@@ -28,7 +30,7 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
-;; Use Eldoc
+;; Use Eldoc with lisp modes
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
@@ -49,19 +51,74 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
+;; Macro for installing packages
+(defmacro install-unless-installed (package)
+  `(unless (package-installed-p ,package)
+     (package-install ,package)))
+
+;; YasSnippet
+(install-unless-installed 'yasnippet)
+; (require 'yasnippet)
+; (yas-global-mode 1)
+
+;; Autocomplete
+(install-unless-installed 'auto-complete)
+(require 'auto-complete)
+(require 'auto-complete-config)
+(ac-config-default)
+
+;; Flycheck
+(install-unless-installed 'flycheck)
+
+;; Setup C mode
+(install-unless-installed 'auto-complete-clang)
+(install-unless-installed 'auto-complete-c-headers)
+(add-hook 'c-mode-common-hook
+	  '(lambda ()
+	     (require 'auto-complete-clang)
+	     (require 'auto-complete-c-headers)
+	     (setq c-default-style "k&r")
+	     (setq c-basic-offset 4)
+	     (add-to-list 'ac-sources ac-source-c-headers)
+	     (add-to-list 'achead:include-directories '"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/5.1/include")))
+
+;; Setup Go mode
+(require 'go-mode)
+(require 'go-autocomplete)
+(require 'go-flymake)
+(require 'go-flycheck)
+(require 'go-errcheck)
+(require 'go-eldoc)
+(require 'golint)
+(defun go-run-buffer()
+  (interactive)
+  (shell-command (concat "go run " (buffer-name))))
+(add-hook 'before-save-hook 'gofmt-before-save)
+(add-hook 'go-mode-hook 
+	  '(lambda () 
+	     (auto-complete-mode)
+	     (go-eldoc-setup)
+	     (local-set-key (kbd "M-.") 'godef-jump)
+	     (local-set-key (kbd "C-c C-r") 'go-remove-unused-imports)
+	     (local-set-key (kbd "C-c C-c") 'go-run-buffer)))
+
 ;; ruby and inf-ruby
 (require 'ruby-mode)
-(unless (package-installed-p 'inf-ruby)
-  (package-install 'inf-ruby))
+(install-unless-installed 'inf-ruby)
 (autoload 'inf-ruby "inf-ruby" "Run an inferior Ruby pathrocess" t)
 (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode)
 (add-hook 'after-init-hook 'inf-ruby-switch-setup)
 (add-to-list 'auto-mode-alist '("Rakefile\\'" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Gemfile\\'" . ruby-mode))
 
+;; clojure-mode
+(install-unless-installed 'clojure-mode)
+(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'clojure-mode-hook 'paredit-mode)
+(add-hook 'clojure-mode-hook 'subword-mode)
+
 ;; CIDER Setup
-(unless (package-installed-p 'cider)
-  (package-install 'cider))
+(install-unless-installed 'cider)
 (add-hook 'cider-repl-mode-hook 'subword-mode)
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
 (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
