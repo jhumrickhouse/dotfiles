@@ -100,7 +100,9 @@
 	     (go-eldoc-setup)
 	     (local-set-key (kbd "M-.") 'godef-jump)
 	     (local-set-key (kbd "C-c C-r") 'go-remove-unused-imports)
+	     (local-set-key (kbd "C-c d") 'godoc-at-point)
 	     (local-set-key (kbd "C-c C-c") 'go-run-buffer)))
+
 
 ;; ruby and inf-ruby
 (require 'ruby-mode)
@@ -123,6 +125,9 @@
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
 (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 
+;; SML mode
+(install-unless-installed 'sml-mode)
+
 ;; Default Pdb Call
 (setq gud-pdb-command-name "python -m pdb")
 
@@ -131,3 +136,4 @@
 (load-theme 'solarized-dark t)
 
 (global-set-key (kbd "C-c w") 'whack-whitespace)
+(global-set-key (kbd "C-c m") 'call-last-kbd-macro)
