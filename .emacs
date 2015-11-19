@@ -9,6 +9,7 @@
       kept-new-versions                 6
       kept-old-versions                 2
       delete-by-moving-to-trash         t
+      delete-old-versions               t
       scroll-step                       1
       scroll-conservatively             1000
       exec-path                         (append exec-path '("/usr/local/bin")))
@@ -23,27 +24,19 @@
 ;; No menubar
 (menu-bar-mode -1)
 
-;; No toolbar
-(tool-bar-mode -1)
-
 ;; Enable Emacs commands
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
-;; Use Eldoc with lisp modes
-(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+;; Add my home directory lisp files
+(add-to-list 'load-path "~/.emacs.d/lisp")
+(require 'mylisp)
 
 ;; Setup TRAMP
 (require 'tramp)
 (setq tramp-default-method "ssh")
 (setq tramp-backup-directory-alist backup-directory-alist)
 (setq tramp-auto-save-directory my-auto-save-folder)
-
-;; Add my home directory lisp files
-(add-to-list 'load-path "~/.emacs.d/lisp")
-(require 'mylisp)
 
 ;; Setup Package.el
 (require 'package)
@@ -56,55 +49,43 @@
   `(unless (package-installed-p ,package)
      (package-install ,package)))
 
-;; YasSnippet
-(install-unless-installed 'yasnippet)
-; (require 'yasnippet)
-; (yas-global-mode 1)
+;; Paredit mode
+(install-unless-installed 'paredit)
 
-;; Autocomplete
-(install-unless-installed 'auto-complete)
-(require 'auto-complete)
-(require 'auto-complete-config)
-(ac-config-default)
+;; Setup ELisp mode hooks with ParEdit, ElDoc, Show-Paren and electric RET
+(defun my-lisp-mode-hook ()
+  (paredit-mode t)
+  (turn-on-eldoc-mode)
+  (eldoc-add-command
+   'paredit-backward-delete
+   'paredit-close-round)
+  (local-set-key (kbd "RET") 'electrify-return-if-match)
+  (eldoc-add-command 'electrify-return-if-match)
+  (show-paren-mode t))
 
-;; Flycheck
-(install-unless-installed 'flycheck)
+(add-hook 'emacs-lisp-mode-hook       'my-lisp-mode-hook)
+(add-hook 'ielm-mode-hook             'my-lisp-mode-hook)
+(add-hook 'lisp-mode-hook             'my-lisp-mode-hook)
+(add-hook 'lisp-interaction-mode-hook 'my-lisp-mode-hook)
+(add-hook 'scheme-mode-hook           'my-lisp-mode-hook)
+
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+
+;; SLIME Setup
+(require 'slime)
+(add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
+(add-hook 'inferior-lisp-mode-hook (lambda () (inferior-slime-mode t)))
+(setq inferior-lisp-program "clisp")
 
 ;; Setup C mode
-(install-unless-installed 'auto-complete-clang)
-(install-unless-installed 'auto-complete-c-headers)
 (add-hook 'c-mode-common-hook
 	  '(lambda ()
-	     (require 'auto-complete-clang)
-	     (require 'auto-complete-c-headers)
 	     (setq c-default-style "k&r")
-	     (setq c-basic-offset 4)
-	     (add-to-list 'ac-sources ac-source-c-headers)
-	     (add-to-list 'achead:include-directories '"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/5.1/include")))
+	     (setq c-basic-offset 4)))
 
-;; Setup Go mode
-(require 'go-mode)
-(require 'go-autocomplete)
-(require 'go-flymake)
-(require 'go-flycheck)
-(require 'go-errcheck)
-(require 'go-eldoc)
-(require 'golint)
-(defun go-run-buffer()
-  (interactive)
-  (shell-command (concat "go run " (buffer-name))))
-(add-hook 'before-save-hook 'gofmt-before-save)
-(add-hook 'go-mode-hook 
-	  '(lambda () 
-	     (auto-complete-mode)
-	     (go-eldoc-setup)
-	     (local-set-key (kbd "M-.") 'godef-jump)
-	     (local-set-key (kbd "C-c C-r") 'go-remove-unused-imports)
-	     (local-set-key (kbd "C-c d") 'godoc-at-point)
-	     (local-set-key (kbd "C-c C-c") 'go-run-buffer)))
-
-
-;; ruby and inf-ruby
 (require 'ruby-mode)
 (install-unless-installed 'inf-ruby)
 (autoload 'inf-ruby "inf-ruby" "Run an inferior Ruby pathrocess" t)
@@ -133,7 +114,8 @@
 
 ;; Use solarized color theme
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
-(load-theme 'solarized-dark t)
+(load-theme 'solarized t)
+(set-terminal-parameter nil 'background-mode 'dark)
 
 (global-set-key (kbd "C-c w") 'whack-whitespace)
 (global-set-key (kbd "C-c m") 'call-last-kbd-macro)
