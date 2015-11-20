@@ -40,9 +40,10 @@
 
 ;; Setup Package.el
 (require 'package)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
+(when (not package-archive-contents)
+  (package-refresh-contents))
 
 ;; Macro for installing packages
 (defmacro install-unless-installed (package)
@@ -75,6 +76,7 @@
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 
 ;; SLIME Setup
+(install-unless-installed 'slime)
 (require 'slime)
 (add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
 (add-hook 'inferior-lisp-mode-hook (lambda () (inferior-slime-mode t)))
@@ -93,6 +95,7 @@
 (add-hook 'after-init-hook 'inf-ruby-switch-setup)
 (add-to-list 'auto-mode-alist '("Rakefile\\'" . ruby-mode))
 (add-to-list 'auto-mode-alist '("Gemfile\\'" . ruby-mode))
+(add-to-list 'auto-mode-alist '("Vagrantfile\\'" . ruby-mode))
 
 ;; clojure-mode
 (install-unless-installed 'clojure-mode)
