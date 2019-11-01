@@ -37,24 +37,16 @@ export PATH=$PATH:/usr/local/texlive/2013basic/bin/x86_64-darwin
 export EDITOR='emacs'
 export ALTERNATE_EDITOR=""
 
-# Set Tomcat home
-export TOMCAT_HOME=$HOME/opt/tomcat7
-
 # Compilation flags
 export ARCHFLAGS="-arch x86_64"
 
 # Setup Java
-JAVA6_HOME=`/usr/libexec/java_home -v 1.6`
-JAVA7_HOME=`/usr/libexec/java_home -v 1.7`
 JAVA8_HOME=`/usr/libexec/java_home -v 1.8`
-export JAVA_HOME=$JAVA8_HOME
+JAVA13_HOME=`/usr/libexec/java_home -v 13`
+export JAVA_HOME=$JAVA13_HOME
 
-# Setup ANTLR
-ANTLR_VERSION="4.4"
-export CLASSPATH=".:/Users/joe/lib/java/antlr-$ANTLR_VERSION-complete.jar:$CLASSPATH"
-
-# Setup RVM
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+#Setup Tomcat
+export TOMCAT_HOME=$HOME/opt/tomcat9
 
 ###############################################################################
 #
@@ -72,14 +64,6 @@ alias bu="brew update && brew outdated"
 # Pretty print json from pasteboard
 alias jsonp="pbpaste | python -mjson.tool"
 
-# Create java scratch project
-alias java-scratch="mvn archetype:generate -DgroupId=com.foo -DartifactId=scratch -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false"
-
-# Aliases for working with ANTLR
-alias antlr4="java -jar ~/lib/java/antlr-$ANTLR_VERSION-complete.jar"
-alias grun='java org.antlr.v4.runtime.misc.TestRig'
-
 # Aliases for switching java
-alias use-java6="export JAVA_HOME=$JAVA6_HOME"
-alias use-java7="export JAVA_HOME=$JAVA7_HOME"
 alias use-java8="export JAVA_HOME=$JAVA8_HOME"
+alias use-java13="export JAVA_HOME=$JAVA13_HOME"
